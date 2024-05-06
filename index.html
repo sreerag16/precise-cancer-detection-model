@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancer Detection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('https://c4.wallpaperflare.com/wallpaper/447/760/1018/blue-science-atom-molecule-wallpaper-preview.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #393E46;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        p {
+            color: #697C89;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .custom-file-upload {
+            display: block;
+            padding: 15px;
+            cursor: pointer;
+            background-color: #FF6B6B;
+            color: #FFF;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            text-align: center;
+            font-size: 16px;
+            margin: 0 auto 20px auto;
+            max-width: 200px;
+        }
+        .custom-file-upload:hover {
+            background-color: #FF5252;
+        }
+        #output img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #loading {
+            display: none;
+            margin-top: 20px;
+            font-style: italic;
+            color: #697C89;
+            font-size: 16px;
+            text-align: center;
+        }
+        #loading.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Breast Cancer Detection</h1>
+        <p>Please select an image file for detection.</p>
+        <label for="file-upload" class="custom-file-upload">
+            Choose File
+        </label>
+        <input id="file-upload" type="file" accept="image/*">
+        <div id="loading">Processing...</div>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function detectObjects() {
+            var form_data = new FormData();
+            var file_input = document.getElementById('file-upload');
+            form_data.append('image', file_input.files[0]);
+            
+            // Show loading message
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('output').innerHTML = '';
+
+            fetch('/detect', {
+                method: 'POST',
+                body: form_data
+            })
+            .then(response => response.blob())
+            .then(data => {
+                var img_url = URL.createObjectURL(data);
+                var output_div = document.getElementById('output');
+                output_div.innerHTML = '<img src="' + img_url + '">';
+                // Hide loading message
+                document.getElementById('loading').classList.remove('show');
+            });
+        }
+
+        var fileUpload = document.getElementById('file-upload');
+        fileUpload.addEventListener('change', detectObjects);
+    </script>
+</body>
+</html>
